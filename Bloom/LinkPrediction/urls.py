@@ -2,5 +2,5 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('link_prediction/', views.link_prediction, name='link_prediction'),
+    path('link_prediction/', views.handle_linkpred_req, name='link_prediction'),
 ]

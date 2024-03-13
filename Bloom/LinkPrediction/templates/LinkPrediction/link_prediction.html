@@ -5,15 +5,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bloom</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="//unpkg.com/force-graph"></script>
     <style>
       body {
         margin: 0;
       }
+
+      .box {
+        background-color: rgb(209,230,220);
+        margin: 20px;
+        padding: 10px;
+        border-radius: 15px;
+        border: 2px solid;
+        min-width: 500px;
+        overflow: scroll;
+        max-height: 95vh;
+      }
     </style>
   </head>
   <body>
+    
+    <div class="container-fluid d-flex flex-direction-column">
+    <div class="box">
+        <h3 class="pb-2">Link Prediction (TransE Method)</h3>
+        <table class="table table-success table-striped">
+            <thead>
+              <tr>
+                <th scope="col">#</th>
+                <th scope="col">Subject</th>
+                <th scope="col">Predicate</th>
+                <th scope="col">Object</th>
+                <th scope="col">Group</th>
+              </tr>
+            </thead>
+            <tbody>
+
+            {% for triple in recontructed_graph %}
+              <tr>
+                <th scope="row">{{ forloop.counter }}</th>
+                <td>{{ triple.0 }}</td>
+                <td>{{ triple.1 }}</td>
+                <td>{{ triple.2 }}</td>
+                {% if triple.3 == "Predict" %}
+                <td style="font-weight: bold; color:green">{{ triple.3 }}</td>
+                {% elif triple.3 == "Ground Truth" %}
+                <td style="font-weight: bold; color: slateblue">{{ triple.3 }}</td>
+                {% else %}
+                <td style="font-weight: bold; color:salmon">{{ triple.3 }}</td>
+
+                {% endif %}
+              </tr>
+            {% endfor %}
+
+            </tbody>
+          </table>
+    </div>
     <div id="graph"></div>
+</div>
 
     <script>
       const data = JSON.parse("{{ graph|escapejs }}");
@@ -22,10 +71,11 @@
         .nodeId("id")
         .nodeLabel("id")
         .nodeAutoColorBy("group")
+        .linkAutoColorBy("group")
         .linkDirectionalArrowLength(5)
         .linkDirectionalArrowRelPos(1)
-        .linkDirectionalParticles(4)
-        .linkDirectionalParticleSpeed(3 * 0.001)
+        // .linkDirectionalParticles(4)
+        // .linkDirectionalParticleSpeed(3 * 0.001)
 
         .nodeCanvasObject((node, ctx, globalScale) => {
           const label = node.id;
@@ -119,7 +169,7 @@
 
           ctx.textAlign = "center";
           ctx.textBaseline = "middle";
-          ctx.fillStyle = "darkgrey";
+          ctx.fillStyle = "darkgrey"; // link text color
           ctx.fillText(label, 0, 0);
           ctx.restore();
         });
